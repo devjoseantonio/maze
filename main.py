@@ -1,27 +1,41 @@
 from readchar import readchar
 from os import system
-import json
+from random import randint
+
 
 MAP_WIDTH = 20
 MAP_HEIGHT = 15
 PLAYER_X = 0
 PLAYER_Y = 0
 
-def drawmap(plposx: int, plposy: int):
+def createmapobj():
+    map_objects = []
+    for x in range(10):
+        map_objects.append([randint(0, MAP_WIDTH), randint(0, MAP_HEIGHT)])
+    return map_objects
+
+def drawmap(plposx: int, plposy: int, map_objects: list):
     system("clear")
     print("Use wasd to move or q to end the game")
-    print("+" + "-"*(MAP_WIDTH*3 ) + "+")
-    for y in range(MAP_HEIGHT):
+    print("+" + "-"*(MAP_WIDTH*3 + 3) + "+")
+    for y in range(MAP_HEIGHT + 1):
         print("|", end="")
-        for x in range(MAP_WIDTH):
-            if(plposx == x and plposy == y):
+        for x in range(MAP_WIDTH + 1 ):
+            map_object = [x, y]
+            if map_object in map_objects:
+                if plposx == map_object[0] and plposy == map_object[1]:
+                    print(" x ", end="")
+                    map_objects.remove(map_object)
+                else:
+                    print(" * ", end="")
+            elif plposx == x and plposy == y:
                 print(" @ ", end="")
             else:
                 print("   ", end="")
         print("|")
-    print("+" + "-"*(MAP_WIDTH*3 ) + "+")
+    print("+" + "-"*(MAP_WIDTH*3 + 3) + "+")
 
-def moveplayer  (player_x, player_y):
+def moveplayer  (player_x, player_y, map_objects):
     move = readchar()
     endgame = False
     match move:
@@ -32,19 +46,19 @@ def moveplayer  (player_x, player_y):
         case "a":
             player_x -= 1
             if player_x < 0:
-                player_x = MAP_WIDTH-1
+                player_x = MAP_WIDTH
             
         case "s":
             player_y += 1
-            if player_y == MAP_HEIGHT:
-                player_y = MAP_HEIGHT-1
+            if player_y > MAP_HEIGHT:
+                player_y = MAP_HEIGHT
         case "d":
             player_x += 1
-            if player_x == MAP_WIDTH:
+            if player_x > MAP_WIDTH:
                 player_x = 0
         case "q":
             endgame = True
-    drawmap(player_x, player_y)
+    drawmap(player_x, player_y, map_objects)
     return [player_x, player_y, endgame]
 
 def main ():
@@ -52,12 +66,12 @@ def main ():
     player_y = PLAYER_Y
     endgame = False
     params = []
-    drawmap(PLAYER_X, PLAYER_Y)
+    map_objects = createmapobj()
+    drawmap(PLAYER_X, PLAYER_Y, map_objects)
     while not endgame:
-        params = moveplayer(player_x, player_y)
+        params = moveplayer(player_x, player_y, map_objects)
         player_x = params[0]
         player_y = params[1]
         endgame = params[2]
-            
 
 main()
