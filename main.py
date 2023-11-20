@@ -1,23 +1,31 @@
+#Library to use wasd to move
 from readchar import readchar
+#Library to clear the map in the console
 from os import system
+#Library to create random integers
 from random import randint
 
-
+#Map dimensions
 MAP_WIDTH = 20
 MAP_HEIGHT = 15
+
+#Player initial position
 PLAYER_X = 0
 PLAYER_Y = 0
 
-
+#This method creates the objects in the map
 def createmapobj():
     map_objects = []
     for x in range(10):
         map_objects.append([randint(0, MAP_WIDTH - 1), randint(0, MAP_HEIGHT - 1)])
     return map_objects
 
+#This method removes an object from the map
 def removemapobj(map_object: list, map_objects: list):
     map_objects.remove(map_object)
 
+
+#This method draws the map and all the objects in it
 def drawmap(plposx: int, plposy: int, map_objects: list):
     system("clear")
     print("Use wasd to move or q to end the game")
@@ -39,6 +47,7 @@ def drawmap(plposx: int, plposy: int, map_objects: list):
         print("|")
     print("+" + "-"*(MAP_WIDTH*3) + "+")
 
+#This method is used to move the player on any direction
 def moveplayer  (player_x, player_y, map_objects):
     move = readchar()
     endgame = False
@@ -65,6 +74,7 @@ def moveplayer  (player_x, player_y, map_objects):
     drawmap(player_x, player_y, map_objects)
     return [player_x, player_y, endgame]
 
+#This is the main method and initializes the program
 def main ():
     player_x = PLAYER_X
     player_y = PLAYER_Y
