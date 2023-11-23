@@ -12,12 +12,18 @@ MAP_HEIGHT = 15
 #Player initial position
 PLAYER_X = 0
 PLAYER_Y = 0
+PLAYER_POS = [PLAYER_X, PLAYER_Y]
+
+#Number of map objects
+NUM_MAPOBJ = 10
 
 #This method creates the objects in the map
 def createmapobj():
     map_objects = []
-    for x in range(10):
-        map_objects.append([randint(0, MAP_WIDTH - 1), randint(0, MAP_HEIGHT - 1)])
+    while len(map_objects) < NUM_MAPOBJ:
+        new_obj = [randint(0, MAP_WIDTH - 1), randint(0, MAP_HEIGHT - 1)]
+        if new_obj not in map_objects and new_obj != PLAYER_POS:
+            map_objects.append(new_obj)
     return map_objects
 
 #This method removes an object from the map
