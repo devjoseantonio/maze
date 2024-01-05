@@ -17,6 +17,7 @@ PLAYER_POS = [PLAYER_X, PLAYER_Y]
 #Number of map objects
 NUM_MAPOBJ = 10
 
+
 #This method creates the objects in the map
 def createmapobj():
     map_objects = []
@@ -32,7 +33,8 @@ def removemapobj(map_object: list, map_objects: list):
 
 
 #This method draws the map and all the objects in it
-def drawmap(plposx: int, plposy: int, map_objects: list):
+def drawmap(plposx: int, plposy: int, map_objects: list, tail_len: int, tail: list):
+    touch_tail = False
     system("clear")
     print("Use wasd to move or q to end the game")
     print("+" + "-"*(MAP_WIDTH*3) + "+")
@@ -42,21 +44,29 @@ def drawmap(plposx: int, plposy: int, map_objects: list):
             map_object = [x, y]
             if map_object in map_objects:
                 if plposx == map_object[0] and plposy == map_object[1]:
-                    print(" x ", end="")
+                    print(" @ ", end="")
+                    tail_len += 1
                     removemapobj(map_object, map_objects)
                 else:
                     print(" * ", end="")
-            elif plposx == x and plposy == y:
+            elif (plposx == x and plposy == y) :
+                print(" @ ", end="")
+                if([plposx, plposy] in tail):
+                    tail_len = -1
+            elif ([x, y] in tail):
                 print(" @ ", end="")
             else:
                 print("   ", end="")
         print("|")
     print("+" + "-"*(MAP_WIDTH*3) + "+")
+    
+    return tail_len
 
 #This method is used to move the player on any direction
-def moveplayer  (player_x, player_y, map_objects):
+def moveplayer  (player_x, player_y, map_objects, tail_len, tail):
     move = readchar()
     endgame = False
+    tail.insert(0, [player_x, player_y])
     match move:
         case "w":
             player_y -= 1
@@ -77,21 +87,28 @@ def moveplayer  (player_x, player_y, map_objects):
                 player_x = 0
         case "q":
             endgame = True
-    drawmap(player_x, player_y, map_objects)
-    return [player_x, player_y, endgame]
+    tail = tail[:tail_len]
+    tail_len = drawmap(player_x, player_y, map_objects, tail_len, tail)
+    if tail_len == -1:
+        endgame = True
+        print("Has muerto!")
+    return [player_x, player_y, tail_len, endgame]
 
 #This is the main method and initializes the program
 def main ():
+    tail_len = 0
     player_x = PLAYER_X
     player_y = PLAYER_Y
     endgame = False
     params = []
+    tail = []
     map_objects = createmapobj()
-    drawmap(PLAYER_X, PLAYER_Y, map_objects)
+    drawmap(PLAYER_X, PLAYER_Y, map_objects, tail_len, tail)
     while not endgame:
-        params = moveplayer(player_x, player_y, map_objects)
+        params = moveplayer(player_x, player_y, map_objects, tail_len, tail)
         player_x = params[0]
         player_y = params[1]
-        endgame = params[2]
+        tail_len = params[2]
+        endgame = params[3]
 
 main()
